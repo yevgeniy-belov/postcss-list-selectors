@@ -1,0 +1,34 @@
+{
+  "name": "postcss-list-selectors",
+  "version": "0.0.0",
+  "description": "PostCSS plugin that lists all selectors.",
+  "keywords": [
+    "postcss",
+    "css",
+    "postcss-plugin",
+    "json",
+    "list",
+    "selectors"
+  ],
+  "author": "Yevgeniy <yevgeniy.belov@hpe.com>",
+  "license": "MIT",
+  "repository": "cssberries/postcss-list-selectors",
+  "bugs": {
+    "url": "https://github.com/cssberries/postcss-list-selectors/issues"
+  },
+  "homepage": "https://github.com/cssberries/postcss-list-selectors",
+  "dependencies": {
+    "postcss": "^5.2.0"
+  },
+  "devDependencies": {
+    "ava": "^0.16.0",
+    "eslint": "^3.4.0",
+    "eslint-config-postcss": "^2.0.2"
+  },
+  "scripts": {
+    "test": "ava && eslint *.js"
+  },
+  "eslintConfig": {
+    "extends": "eslint-config-postcss/es5"
+  }
+}
