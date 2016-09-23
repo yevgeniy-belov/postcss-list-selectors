@@ -1,13 +1,21 @@
 var postcss = require('postcss');
+module.exports = postcss.plugin('postcss-list-selectors', function (options) {
 
-module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
-    opts = opts || {};
+    return function (root) {
+        options = options || {};
 
-    // Work with options here
-
-    return function (root, result) {
-
-        // Transform CSS AST here
+        var rulesList = [];
+        // root.walkAtRules(function(rule) {
+        //     content = {};
+        //     key = '@' +  rule.name;
+        //     content = rule.nodes[0].selector;
+        //     rulesList.push(key + ': {' + content + '}');
+        // });
+        root.walkRules(function (rule) {
+            rulesList.push(rule.selector);
+        });
+        fs = require('fs');
+        fs.writeFile('ugentest.json', JSON.stringify(rulesList, null, 4));
 
     };
 });
