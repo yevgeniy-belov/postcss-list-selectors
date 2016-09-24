@@ -1,6 +1,6 @@
-# PostCSS List Selectors [![Build Status][ci-img]][ci]
+# postcss-list-selectors
 
-[PostCSS] plugin that lists all selectors..
+[PostCSS] plugin that lists all selectors.
 
 [PostCSS]: https://github.com/postcss/postcss
 [ci-img]:  https://travis-ci.org/cssberries/postcss-list-selectors.svg

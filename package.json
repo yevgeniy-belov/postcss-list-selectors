@@ -10,7 +10,7 @@
     "list",
     "selectors"
   ],
-  "author": "Yevgeniy <ugenmail@gmail.com>",
+  "author": "Yevgeniy Belov <ugenmail@gmail.com>",
   "license": "MIT",
   "repository": "cssberries/postcss-list-selectors",
   "bugs": {
