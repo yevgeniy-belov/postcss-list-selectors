@@ -1,10 +1,7 @@
 # postcss-list-selectors
 
-[PostCSS] plugin that lists all selectors.
+A PostCSS plugin that collects all CSS selectors to JSON file.
 
-[PostCSS]: https://github.com/postcss/postcss
-[ci-img]:  https://travis-ci.org/cssberries/postcss-list-selectors.svg
-[ci]:      https://travis-ci.org/cssberries/postcss-list-selectors
 
 ```css
 .btn {
