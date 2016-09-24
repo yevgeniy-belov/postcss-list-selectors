@@ -7,15 +7,19 @@
 [ci]:      https://travis-ci.org/cssberries/postcss-list-selectors
 
 ```css
-.foo {
-    /* Input example */
+.btn {
+    /* btn properties */
+}
+.btn--xl {
+    /* btn--xl properties */
 }
 ```
 
-```css
-.foo {
-  /* Output example */
-}
+```json
+[
+    ".btn",
+    ".btn--xl"
+]
 ```
 
 ## Usage

@@ -1,6 +1,6 @@
 {
   "name": "postcss-list-selectors",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "PostCSS plugin that lists all selectors.",
   "keywords": [
     "postcss",
@@ -10,7 +10,7 @@
     "list",
     "selectors"
   ],
-  "author": "Yevgeniy <yevgeniy.belov@hpe.com>",
+  "author": "Yevgeniy <ugenmail@gmail.com>",
   "license": "MIT",
   "repository": "cssberries/postcss-list-selectors",
   "bugs": {
