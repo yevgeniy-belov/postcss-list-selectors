@@ -5,10 +5,10 @@ A PostCSS plugin that collects all CSS selectors to JSON file.
 
 ```css
 .btn {
-    /* btn properties */
+    /* btn declarations */
 }
 .btn--xl {
-    /* btn--xl properties */
+    /* btn--xl declarations */
 }
 ```
 
