@@ -1,4 +1,4 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     grunt.initConfig({
 
@@ -28,10 +28,25 @@ module.exports = function (grunt) {
                     spawn: true
                 }
             }
-        }
+        },
+        bump: {
+            options: {
+                files: ['*.json'],
+                commit: true,
+                commitMessage: 'v%VERSION%',
+                commitFiles: ['*'],
+                createTag: true,
+                tagName: 'v%VERSION%',
+                tagMessage: 'Version %VERSION%',
+                push: 'tag',
+                pushTo: 'origin master',
+                gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+            }
+        },
     });
 
     grunt.loadNpmTasks('grunt-postcss');
+    grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
 };
