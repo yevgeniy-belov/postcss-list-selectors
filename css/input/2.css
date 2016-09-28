@@ -1,0 +1,58 @@
+/* layer: elements */
+p {
+    /* example: <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum numquam quibusdam explicabo molestias similique deserunt placeat ad dolore eligendi natus unde in quos et autem ratione, corporis, ipsa soluta, id ipsum aspernatur veniam nisi laboriosam voluptatibus quis! Hic ullam voluptatem laboriosam, explicabo, sit, suscipit mollitia, ipsa ipsum nihil obcaecati omnis.</p>
+    */
+    margin: 0;
+}
+.btn.btn--xl{
+/* example: <div class="btn"></div>*/
+}
+.btn--primary{
+/* example: <div class="btn btn--primary"></div>*/
+}
+.btn--warning{
+/* example: <div class="btn btn--warning"></div>*/
+}
+.btn--info{
+/* example: <div class="btn btn--info"></div>*/
+}
+.btn--secondary{
+/* example: <div class="btn btn--secondary"></div>*/
+}
+.btn--error{
+/* example: <div class="btn btn--error"></div>*/
+}
+
+/* layer: objects */
+.margin--xl {
+    margin: 50px
+}
+
+.margin--lg {
+    margin: 30px;
+}
+.text--xxs{
+/* example: <div class="text--xxs">The quick brown fox jumps over the lazy dog</div>*/
+}
+/* layer: materials */
+.border{
+/* example: <div class="border"></div>*/
+    border: 1px solid black
+}
+/* startExample: <div class="exampleClass square--xs"></div>*/
+.bg--content{background: white;}
+.bg--primary{background: redd;}
+.bg--success{background: white;}
+.bg--error{background: white;}
+.shadow--xl{}
+.shadow--strong{}
+/*stopExample*/
+/* layer: components */
+/* startExample: <div class="exampleClass">Button</div>*/
+.btn:active{}
+.btn {border: 1px solid black;}
+.btn:hover{}
+    /*stopExample*/
+.tabs {}
+.tabs__item{}
+.tabs__item--active{}
