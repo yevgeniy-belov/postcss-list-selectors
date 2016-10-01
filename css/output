@@ -1,3 +1,5 @@
+
+/*startDocs*/
 /* layer: elements */
 p {
     /* example: <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum numquam quibusdam explicabo molestias similique deserunt placeat ad dolore eligendi natus unde in quos et autem ratione, corporis, ipsa soluta, id ipsum aspernatur veniam nisi laboriosam voluptatibus quis! Hic ullam voluptatem laboriosam, explicabo, sit, suscipit mollitia, ipsa ipsum nihil obcaecati omnis.</p>
@@ -39,7 +41,7 @@ p {
 /* example: <div class="border"></div>*/
     border: 1px solid black
 }
-/* startExample: <div class="exampleClass square--xs"></div>*/
+/* startExample: <div class="exampleClass square--xs" ng-class="{'test': exampleClass === 'content'}"></div>*/
 .bg--content{background: white;}
 .bg--primary{background: redd;}
 .bg--success{background: white;}

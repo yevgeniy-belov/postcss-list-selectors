@@ -6,7 +6,8 @@ module.exports = function(grunt) {
             options: {
                 processors: [
                     require('./index')({
-                        dest: 'selectors-list.json'
+                        mainDest: 'selectors-list.json',
+                        statsDest: 'stats.json'
                     })
                 ]
             },

@@ -1,0 +1,217 @@
+{
+    "elements": [
+        {
+            "selector": "p",
+            "blockName": "",
+            "BEM": "block",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum numquam quibusdam explicabo molestias similique deserunt placeat ad dolore eligendi natus unde in quos et autem ratione, corporis, ipsa soluta, id ipsum aspernatur veniam nisi laboriosam voluptatibus quis! Hic ullam voluptatem laboriosam, explicabo, sit, suscipit mollitia, ipsa ipsum nihil obcaecati omnis.</p>"
+        },
+        {
+            "selector": ".btn.btn--xl",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<div class=\"btn\"></div>"
+        },
+        {
+            "selector": ".btn--primary",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "primary",
+            "state": "",
+            "example": "<div class=\"btn btn--primary\"></div>"
+        },
+        {
+            "selector": ".btn--warning",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "warning",
+            "state": "",
+            "example": "<div class=\"btn btn--warning\"></div>"
+        },
+        {
+            "selector": ".btn--info",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "info",
+            "state": "",
+            "example": "<div class=\"btn btn--info\"></div>"
+        },
+        {
+            "selector": ".btn--secondary",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "secondary",
+            "state": "",
+            "example": "<div class=\"btn btn--secondary\"></div>"
+        },
+        {
+            "selector": ".btn--error",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "error",
+            "state": "",
+            "example": "<div class=\"btn btn--error\"></div>"
+        }
+    ],
+    "objects": [
+        {
+            "selector": ".margin--xl",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "missing"
+        },
+        {
+            "selector": ".margin--lg",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "missing"
+        },
+        {
+            "selector": ".text--xxs",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<div class=\"text--xxs\">The quick brown fox jumps over the lazy dog</div>"
+        }
+    ],
+    "materials": [
+        {
+            "selector": ".border",
+            "blockName": "",
+            "BEM": "block",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<div class=\"border\"></div>"
+        },
+        {
+            "selector": ".bg--content",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<div class=\" bg--content square--xs\" ng-class=\"{'test':  bg--content === 'content'}\"></div>"
+        },
+        {
+            "selector": ".bg--primary",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "primary",
+            "state": "",
+            "example": "<div class=\" bg--primary square--xs\" ng-class=\"{'test':  bg--primary === 'content'}\"></div>"
+        },
+        {
+            "selector": ".bg--success",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<div class=\" bg--success square--xs\" ng-class=\"{'test':  bg--success === 'content'}\"></div>"
+        },
+        {
+            "selector": ".bg--error",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "error",
+            "state": "",
+            "example": "<div class=\" bg--error square--xs\" ng-class=\"{'test':  bg--error === 'content'}\"></div>"
+        },
+        {
+            "selector": ".shadow--xl",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<div class=\" shadow--xl square--xs\" ng-class=\"{'test':  shadow--xl === 'content'}\"></div>"
+        },
+        {
+            "selector": ".shadow--strong",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "intensity",
+            "status": "",
+            "state": "",
+            "example": "<div class=\" shadow--strong square--xs\" ng-class=\"{'test':  shadow--strong === 'content'}\"></div>"
+        }
+    ],
+    "components": [
+        {
+            "selector": ".btn:active",
+            "blockName": "",
+            "BEM": "block",
+            "modifierType": "",
+            "status": "",
+            "state": "active",
+            "example": "<div class=\" btn:active\">Button</div>"
+        },
+        {
+            "selector": ".btn",
+            "blockName": "",
+            "BEM": "block",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "<div class=\" btn\">Button</div>"
+        },
+        {
+            "selector": ".btn:hover",
+            "blockName": "",
+            "BEM": "block",
+            "modifierType": "",
+            "status": "",
+            "state": "hover",
+            "example": "<div class=\" btn:hover\">Button</div>"
+        },
+        {
+            "selector": ".tabs",
+            "blockName": "",
+            "BEM": "block",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "missing"
+        },
+        {
+            "selector": ".tabs__item",
+            "blockName": "",
+            "BEM": "element",
+            "modifierType": "",
+            "status": "",
+            "state": "",
+            "example": "missing"
+        },
+        {
+            "selector": ".tabs__item--active",
+            "blockName": "",
+            "BEM": "modifier",
+            "modifierType": "",
+            "status": "",
+            "state": "active",
+            "example": "missing"
+        }
+    ]
+}

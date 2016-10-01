@@ -2,22 +2,35 @@ require('es6-promise').polyfill();
 var postcss = require('postcss');
 var fs = require('fs');
 var _ = require('lodash');
-
 module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
-
-    var dest = opts.dest || '1.json';
-    var rulesList = [];
+    var mainDest = opts.mainDest || 'selectors-list.json';
+    var statsDest = opts.statsDest || 'stats.json';
+    var stats = {};
     var layerName = '';
     var repeatingExample = 'missing';
-
+    var documenting = false;
+    wrapper = {}; //This is what will be exported to JSON
+    layers = []; //Divisions sorted by growing specificity according to ITCSS
     return function (root) {
-
+        var selectorsCount = 0;
+        var elementsCount = 0;
+        var objectsCount = 0;
+        var materialsCount = 0;
+        var componentsCount = 0;
         var ruleSelector = '';
+        var blockName = '';
         var bemType = '';
         var blockStatus = '';
         var blockState = '';
         var example = '';
-
+        function findLayers() {
+            root.each(function(container) {
+                if (container.type === 'comment') {
+                    if (container.text.includes('layer:'))
+                        layers.push(container.text.replace('layer: ', ''))
+                }
+            });
+        }
         function recognizeState() {
             if (ruleSelector.includes('hover')) {
                 blockState = 'hover';
@@ -37,6 +50,11 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                 blockState = 'visited';
             } else {
                 blockState = '';
+            }
+        }
+        function defineBlockName(){
+            if (blockState !== ''){
+                blockName =  ruleSelector.replace('^:', '');
             }
         }
         function recognizeStatus() {
@@ -88,52 +106,84 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                 }
             }
         }
-
-        root.each(function (container) {
-            example = '';
-            var ruleSet = {};
-            if (container.text) {
-                if (container.text.includes('layer:')) {
-                    layerName = container.text.replace('layer: ', '');
+        function buildLayer(layerName){
+            var layer = {};
+            var layerContent = [];
+            var currentLayerName = '';
+            root.each(function (container) {
+                var ruleSet = {};
+                // Process comments
+                if (container.type === 'comment') {
+                    if (container.text.includes('startExample:')) {
+                        repeatingExample = container.text.replace('startExample: ', '');
+                    }
+                    if (container.text.includes('stopExample')) {
+                        repeatingExample = '';
+                    }
+                    if (container.text.includes('startDocs')) {
+                        documenting = true;
+                    }
+                    if (container.text.includes('stopDocs')) {
+                        documenting = false;
+                    }
                 }
+                if (documenting) {
+                    example = '';
+                    if (container.text) {
+                        if (container.text.includes('layer:')) {
+                            currentlayerName = container.text.replace('layer: ', '');
+                        }
+                    }
+                    // Process rules
+                    if (container.type === 'rule') {
+                        selectorsCount = selectorsCount + 1;
+                        ruleSelector = container.selector;
+                        recognizeBemType();
+                        recognizeStatus();
+                        recognizeState();
+                        if (container.nodes[0]) {
+                            findExample(container.nodes[0].text);
+                        };
+                        ruleSet.selector = ruleSelector;
+                        ruleSet.blockName = blockName;
+                        exampleClass = ruleSelector.replace(/\./g,' ');
+                        exampleClass = exampleClass.replace(/\:before/g,'');
+                        exampleClass = exampleClass.replace(/\:after/g,'');
+                        ruleSet.BEM = bemType;
+                        ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
+                        ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : '';
+                        ruleSet.status = blockStatus;
+                        ruleSet.state = blockState;
+                        ruleSet.example = example;
+                        if (example === '') {
+                            ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
+                        }
+                        if (layerName === currentlayerName){
+                            layerContent.push(ruleSet);
+                        }
+                        layer = layerContent;
+                    }
+                }
+            });
+            return layer;
+        };
+        function fillLayers() {
+            arrayLength = layers.length;
+            for (var i = 0; i < arrayLength; i++) {
+                wrapper[layers[i]] = (buildLayer(layers[i]));
             }
+        }
 
-            // Process comments
-            if (container.type === 'comment') {
-                if (container.text.includes('startExample:')) {
-                    repeatingExample = container.text.replace('startExample: ', '');
-                }
-                if (container.text.includes('stopExample')) {
-                    repeatingExample = '';
-                }
-            }
+        findLayers();
+        fillLayers();
 
-            // Process rules
-            if (container.type === 'rule') {
-                ruleSelector = container.selector;
-                recognizeBemType();
-                recognizeStatus();
-                recognizeState();
-                if (container.nodes[0]) {
-                    findExample(container.nodes[0].text);
-                };
-                ruleSet.selector = ruleSelector;
-                exampleClass = ruleSelector.replace(/\./g,' ');
-                exampleClass = exampleClass.replace(/\:after/g,'');
-                ruleSet.BEM = bemType;
-                ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
-                ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : '';
-                ruleSet.layer = layerName;
-                ruleSet.status = blockStatus;
-                ruleSet.state = blockState;
-                ruleSet.example = example;
-                if (example === '') {
-                    ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
-                }
-                rulesList.push(ruleSet);
-            }
-        });
-        fs.writeFile(dest, JSON.stringify(rulesList, null, 4));
-        rulesList = [];
+        fs.writeFile(mainDest, JSON.stringify(wrapper, null, 4));
+        fs.writeFile(statsDest, JSON.stringify(stats, null, 4));
+        documenting = false;
+        var selectorsCount = 0;
+        var elementsCount = 0;
+        var objectsCount = 0;
+        var materialsCount = 0;
+        var componentsCount = 0;
     };
 });
