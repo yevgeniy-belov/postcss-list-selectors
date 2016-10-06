@@ -6,14 +6,14 @@ module.exports = function(grunt) {
             options: {
                 processors: [
                     require('./index')({
-                        mainDest: 'selectors-list.json'
+                        mainDest: 'build/selectors-list.json'
                     })
                 ]
             },
             dist: {
                 // src: 'css/input/2.css',
                 src: '../stylebox/docs/build/css/*.css',
-                dest: 'css/output/1.css'
+                dest: 'build/output.css'
             }
 
         },
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
         },
         copy: {
             main: {
-                src: 'selectors-list.json',
+                src: 'build/selectors-list.json',
                 dest: '../stylebox/docs/src/data/',
             }
 

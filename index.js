@@ -232,7 +232,7 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
         wrapper.rules = collectRules();
 
         fs.writeFile(mainDest, JSON.stringify(wrapper, null, 4));
-        fs.writeFile(statsDest, JSON.stringify(stats, null, 4));
+        // fs.writeFile(statsDest, JSON.stringify(stats, null, 4));
         documenting = false;
         wrapper = {}; //This is what will be exported to JSON
         rules = []; //List of rules
