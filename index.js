@@ -10,7 +10,10 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
     var repeatingExample = 'missing';
     var documenting = false;
     wrapper = {}; //This is what will be exported to JSON
+    rules = []; //List of rules
     layers = []; //Divisions sorted by growing specificity according to ITCSS
+    categories = []; // Colors, typography, buttons, etc.
+    tags = []; // List of used tags.
     return function (root) {
         var selectorsCount = 0;
         var elementsCount = 0;
@@ -23,11 +26,21 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
         var blockStatus = '';
         var blockState = '';
         var example = '';
+        var template = '';
+        var autoTemplate = false;
         function findLayers() {
             root.each(function(container) {
                 if (container.type === 'comment') {
                     if (container.text.includes('layer:'))
                         layers.push(container.text.replace('layer: ', ''))
+                }
+            });
+        }
+        function findCategories() {
+            root.each(function(container) {
+                if (container.type === 'comment') {
+                    if (container.text.includes('category:'))
+                        categories.push(container.text.replace('category: ', ''))
                 }
             });
         }
@@ -106,16 +119,45 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                 }
             }
         }
-        function buildLayer(layerName){
+        function removeNotNestingOperators(selector){
+            return selector.replace(' + ', '');
+        }
+        function removeDotes(selector){
+            return selector.replace('.', '');
+        }
+        function splitSelectorToNodes(selector) {
+            return removeNotNestingOperators(selector).split(' '); // Chains after " " select childs of chains before " ".
+        }
+        function splitSubSelectors(selector) {
+            return selector.split(',');
+        }
+        function buildExample(selector) {
+            var selectorSiblings = []; // List of siblings - selector's parts separated by " + ",
+            selectorSiblings = selector.split(' + '); // Chains separated by " + " select siblings.
+            var selectorNodes = []; // List of nested nodes - selector's parts separated by " ",
+            selectorNodes = splitSelectorToNodes(selector);
+            selectorNodes = selectorNodes.reverse(); // Patch solution for wrong nesting order
+            templateOpenTag = '<div';
+            templateClassAttribute = 'class=';
+            templateContent = 'Content';
+            templateCloseTag = '</div>';
+            for (var i = 0; i < selectorNodes.length; i++) {
+                template = templateOpenTag + ' ' + templateClassAttribute + '"' + selectorNodes[i] + '"' + '>' + template + templateCloseTag;
+                template = removeDotes(template);
+            }
+            return template;
+        };
+
+        function collectRules(){
             var layer = {};
-            var layerContent = [];
-            var currentLayerName = '';
+            var currentLayer = '';
+            var currentCategory = '';
             root.each(function (container) {
                 var ruleSet = {};
                 // Process comments
                 if (container.type === 'comment') {
                     if (container.text.includes('startExample:')) {
-                        repeatingExample = container.text.replace('startExample: ', '');
+                        repeatingExample = container.text.replace('startExample:', '');
                     }
                     if (container.text.includes('stopExample')) {
                         repeatingExample = '';
@@ -126,14 +168,24 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                     if (container.text.includes('stopDocs')) {
                         documenting = false;
                     }
+                    if (container.text.includes('layer:')) {
+                        currentLayer = container.text.replace('layer: ', '');
+                    }
+                    if (container.text.includes('category:')) {
+                        currentCategory = container.text.replace('category: ', '');
+                    }
+                    if (container.text.includes('stopCategory')) {
+                        currentCategory = '';
+                    }
+                    if (container.text.includes('startAutoExample')) {
+                        autoTemplate = true;
+                    }
+                    if (container.text.includes('stopAutoExample')) {
+                        autoTemplate = false;
+                    }
                 }
                 if (documenting) {
                     example = '';
-                    if (container.text) {
-                        if (container.text.includes('layer:')) {
-                            currentlayerName = container.text.replace('layer: ', '');
-                        }
-                    }
                     // Process rules
                     if (container.type === 'rule') {
                         selectorsCount = selectorsCount + 1;
@@ -144,7 +196,11 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                         if (container.nodes[0]) {
                             findExample(container.nodes[0].text);
                         };
+                        // ruleSet.subSelectors = splitSubSelectors(ruleSelector);
+                        // ruleSet.chainsList = splitSelectorToNodes(ruleSelector);
                         ruleSet.selector = ruleSelector;
+                        ruleSet.layer = currentLayer;
+                        ruleSet.category = currentCategory;
                         ruleSet.blockName = blockName;
                         exampleClass = ruleSelector.replace(/\./g,' ');
                         exampleClass = exampleClass.replace(/\:before/g,'');
@@ -152,38 +208,41 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                         ruleSet.BEM = bemType;
                         ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
                         ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : '';
-                        ruleSet.status = blockStatus;
-                        ruleSet.state = blockState;
+                        // ruleSet.status = blockStatus;
+                        // ruleSet.state = blockState;
+                        if (autoTemplate){
+                            ruleSet.template = buildExample(ruleSelector);
+                        }
                         ruleSet.example = example;
                         if (example === '') {
                             ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
                         }
-                        if (layerName === currentlayerName){
-                            layerContent.push(ruleSet);
-                        }
-                        layer = layerContent;
+                        rules.push(ruleSet);
                     }
                 }
             });
-            return layer;
+            return rules;
         };
-        function fillLayers() {
-            arrayLength = layers.length;
-            for (var i = 0; i < arrayLength; i++) {
-                wrapper[layers[i]] = (buildLayer(layers[i]));
-            }
-        }
 
         findLayers();
-        fillLayers();
+        findCategories();
+
+        wrapper.layers = layers;
+        wrapper.categories = categories.sort();
+        wrapper.rules = collectRules();
 
         fs.writeFile(mainDest, JSON.stringify(wrapper, null, 4));
         fs.writeFile(statsDest, JSON.stringify(stats, null, 4));
         documenting = false;
-        var selectorsCount = 0;
-        var elementsCount = 0;
-        var objectsCount = 0;
-        var materialsCount = 0;
-        var componentsCount = 0;
+        wrapper = {}; //This is what will be exported to JSON
+        rules = []; //List of rules
+        layers = []; //Divisions sorted by growing specificity according to ITCSS
+        categories = []; // Colors, typography, buttons, etc.
+        tags = []; // List of used tags.
+        selectorsCount = 0;
+        elementsCount = 0;
+        objectsCount = 0;
+        materialsCount = 0;
+        componentsCount = 0;
     };
 });

@@ -1,11 +1,48 @@
 
 /*startDocs*/
 /* layer: elements */
+/*category: typography*/
 p {
     /* example: <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum numquam quibusdam explicabo molestias similique deserunt placeat ad dolore eligendi natus unde in quos et autem ratione, corporis, ipsa soluta, id ipsum aspernatur veniam nisi laboriosam voluptatibus quis! Hic ullam voluptatem laboriosam, explicabo, sit, suscipit mollitia, ipsa ipsum nihil obcaecati omnis.</p>
     */
     margin: 0;
 }
+/*stopCategory*/
+
+
+/* layer: objects */
+/*category: gaps*/
+.margin--xl {
+    margin: 50px
+}
+
+.margin--lg {
+    margin: 30px;
+}
+/*category: typography*/
+.text--xxs{
+/* example: <div class="text--xxs">The quick brown fox jumps over the lazy dog</div>*/
+}
+/* layer: materials */
+/*category: borders*/
+.border{
+/* example: <div class="border"></div>*/
+    border: 1px solid black
+}
+/* startExample: <div class="exampleClass square--xs"></div>*/
+/*category: backgrounds*/
+.bg--content{background: white;}
+.bg--primary{background: redd;}
+.bg--success{background: white;}
+.bg--error{background: white;}
+/*category: shadows*/
+.shadow--xl{}
+.shadow--strong{}
+/*stopExample*/
+/* layer: components */
+/*category: buttons*/
+.block .block__element{}
+.btn + .btn {}
 .btn.btn--xl{
 /* example: <div class="btn"></div>*/
 }
@@ -24,32 +61,6 @@ p {
 .btn--error{
 /* example: <div class="btn btn--error"></div>*/
 }
-
-/* layer: objects */
-.margin--xl {
-    margin: 50px
-}
-
-.margin--lg {
-    margin: 30px;
-}
-.text--xxs{
-/* example: <div class="text--xxs">The quick brown fox jumps over the lazy dog</div>*/
-}
-/* layer: materials */
-.border{
-/* example: <div class="border"></div>*/
-    border: 1px solid black
-}
-/* startExample: <div class="exampleClass square--xs" ng-class="{'test': exampleClass === 'content'}"></div>*/
-.bg--content{background: white;}
-.bg--primary{background: redd;}
-.bg--success{background: white;}
-.bg--error{background: white;}
-.shadow--xl{}
-.shadow--strong{}
-/*stopExample*/
-/* layer: components */
 /* startExample: <div class="exampleClass">Button</div>*/
 .btn:active{}
 .btn {border: 1px solid black;}

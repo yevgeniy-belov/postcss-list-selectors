@@ -6,29 +6,36 @@ module.exports = function(grunt) {
             options: {
                 processors: [
                     require('./index')({
-                        mainDest: 'selectors-list.json',
-                        statsDest: 'stats.json'
+                        mainDest: 'selectors-list.json'
                     })
                 ]
             },
             dist: {
-                src: 'css/input/2.css',
-                // src: '../stylebox/docs/build/css/*.css',
-                dest: 'css/output/'
+                // src: 'css/input/2.css',
+                src: '../stylebox/docs/build/css/*.css',
+                dest: 'css/output/1.css'
             }
 
         },
         watch: {
-            scripts: {
+            main: {
                 files: [
                     'css/input/*.css',
+                    '../stylebox/src/less/**/*.less',
                     '*.js'
                 ],
-                tasks: ['postcss'],
+                tasks: ['postcss', 'copy'],
                 options: {
                     spawn: true
                 }
             }
+        },
+        copy: {
+            main: {
+                src: 'selectors-list.json',
+                dest: '../stylebox/docs/src/data/',
+            }
+
         },
         bump: {
             options: {
@@ -49,5 +56,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-postcss');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
 };
