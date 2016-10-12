@@ -6,13 +6,13 @@ module.exports = function(grunt) {
             options: {
                 processors: [
                     require('./index')({
-                        mainDest: 'build/selectors-list.json'
+                        mainDest: 'selectors-list.json'
                     })
                 ]
             },
             dist: {
-                // src: 'css/input/2.css',
-                src: '../stylebox/docs/build/css/*.css',
+                src: 'css/input/3.css',
+                // src: '../stylebox/docs/build/css/*.css',
                 dest: 'build/output.css'
             }
 
@@ -33,9 +33,13 @@ module.exports = function(grunt) {
         copy: {
             main: {
                 src: 'build/selectors-list.json',
-                dest: '../stylebox/docs/src/data/',
+                dest: 'build/',
+                // dest: '../stylebox/docs/src/data/',
             }
 
+        },
+        'node-inspector': {
+            dev: {}
         },
         bump: {
             options: {
@@ -57,5 +61,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-node-inspector');
 
 };

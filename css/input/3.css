@@ -1,6 +1,9 @@
-
 /*startDocs*/
-/*layer:test*/
-/*category:general*/
-/*.btn + .btn{}*/
-.block .block__element .test{}
+/*layer: test*/
+/*category: general*/
+/*startAutoExample*/
+.btn + .icon .btn--xl, .icon + .icon > i {}
+/*ul.list.list--xl li, .list, .btn.btn--xl, button, .tabs .tabs__item{}*/
+/*ul.list li.list__item,*/
+/*.list .list__item{}*/
+/*.block .block__element p{}*/

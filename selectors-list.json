@@ -1,0 +1,26 @@
+{
+    "layers": [
+        "test"
+    ],
+    "categories": [
+        "general"
+    ],
+    "rules": [
+        {
+            "selector": ".btn + .icon .btn--xl, .icon + .icon > i",
+            "nodes": [
+                ".btn",
+                ".icon",
+                ".btn--xl,",
+                ".icon",
+                ".icon",
+                "i"
+            ],
+            "modifierType": "",
+            "examples": [
+                "<div class=\"btn\"><div class=\"icon\"><div class=\"btn--xl\">test</div></div></div>",
+                "<div class=\"icon\"><div class=\"icon\"><i>test</i></div></div>"
+            ]
+        }
+    ]
+}

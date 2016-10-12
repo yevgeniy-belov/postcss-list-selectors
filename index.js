@@ -2,7 +2,7 @@ require('es6-promise').polyfill();
 var postcss = require('postcss');
 var fs = require('fs');
 var _ = require('lodash');
-module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
+var mainFunction = function(opts) {
     var mainDest = opts.mainDest || 'selectors-list.json';
     var statsDest = opts.statsDest || 'stats.json';
     var stats = {};
@@ -14,7 +14,7 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
     layers = []; //Divisions sorted by growing specificity according to ITCSS
     categories = []; // Colors, typography, buttons, etc.
     tags = []; // List of used tags.
-    return function (root) {
+    return function(root) {
         var selectorsCount = 0;
         var elementsCount = 0;
         var objectsCount = 0;
@@ -25,9 +25,7 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
         var bemType = '';
         var blockStatus = '';
         var blockState = '';
-        var example = '';
-        var template = '';
-        var autoTemplate = false;
+        var autoExample = false;
         function findLayers() {
             root.each(function(container) {
                 if (container.type === 'comment') {
@@ -65,9 +63,9 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                 blockState = '';
             }
         }
-        function defineBlockName(){
-            if (blockState !== ''){
-                blockName =  ruleSelector.replace('^:', '');
+        function defineBlockName() {
+            if (blockState !== '') {
+                blockName = ruleSelector.replace('^:', '');
             }
         }
         function recognizeStatus() {
@@ -90,7 +88,7 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
         }
         function recognizeModifierType(rs, arr) {
             if (rs !== '') {
-                return _.some(arr, function (item) {
+                return _.some(arr, function(item) {
                     return rs.includes(item);
                 });
             }
@@ -107,52 +105,93 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
         }
         function findExample(blockDom) {
             if (blockDom) {
-                if (blockDom.includes('example:')){
+                if (blockDom.includes('example:')) {
                     example = blockDom.replace('example: ', '');
                 }
             }
         }
         function findRepeatingExample(blockDom) {
             if (blockDom) {
-                if (blockDom.includes('startExample:')){
+                if (blockDom.includes('startExample:')) {
                     example = blockDom.replace('startExample: ', '');
                 }
             }
         }
-        function removeNotNestingOperators(selector){
-            return selector.replace(' + ', '');
+        function transformClassSelectorToHtmlNode(classSelector, childNode){
+            classSelector = classSelector.replace('.', '');
+            return '<div class=' + '"' + classSelector + '"' + '>' + childNode + '</div>';
         }
-        function removeDotes(selector){
-            return selector.replace('.', '');
+        function transformTypeSelectorToHtmlNode(typeSelector, childNode){
+            return '<' + typeSelector + '>' + childNode + '</' + typeSelector + '>';
         }
-        function splitSelectorToNodes(selector) {
-            return removeNotNestingOperators(selector).split(' '); // Chains after " " select childs of chains before " ".
+        function transformTypeSelectorSequenceToHtmlNode(typeSelectorSequence, childNode){
+            var sequenceChains = typeSelectorSequence.split('.');
+            var typeSelector = sequenceChains[0];
+            var classesList = sequenceChains.splice(1).join(' '); //
+            openTag = '<' + typeSelector + '>';
+            closeTag = '</' + typeSelector + '>';
+            return openTag + ' ' + attribute + '"' + classesList + '"' + '>' + example + closeTag;
         }
-        function splitSubSelectors(selector) {
-            return selector.split(',');
+        function splitMainSelector(mainSelector) {
+            var s = mainSelector
+            s = s.split(', .').join(',.');
+            s = s.split(', ').join(',');
+            return s.split(',');
         }
-        function buildExample(selector) {
-            var selectorSiblings = []; // List of siblings - selector's parts separated by " + ",
-            selectorSiblings = selector.split(' + '); // Chains separated by " + " select siblings.
-            var selectorNodes = []; // List of nested nodes - selector's parts separated by " ",
-            selectorNodes = splitSelectorToNodes(selector);
-            selectorNodes = selectorNodes.reverse(); // Patch solution for wrong nesting order
-            templateOpenTag = '<div';
-            templateClassAttribute = 'class=';
-            templateContent = 'Content';
-            templateCloseTag = '</div>';
-            for (var i = 0; i < selectorNodes.length; i++) {
-                template = templateOpenTag + ' ' + templateClassAttribute + '"' + selectorNodes[i] + '"' + '>' + template + templateCloseTag;
-                template = removeDotes(template);
+        function splitChainToSequences(chain) {
+            var chain = chain;
+            chain = chain.replace(/ \+ /g, '+'); // Remove spaces for correct split.
+            chain = chain.replace(/ > /g, '>'); // Remove spaces for correct split.
+            chain = chain.replace(/ ~ /g, '~'); // Remove spaces for correct split.
+            console.log(chain);
+            sequence = chain.split(/ |>|~|\+/); // Split chain to sequnces (separated by spaces).
+            // console.log(sequence);
+            return sequence;
+        }
+        function iterateChain(chain) {
+            var example = '';
+            var sequences = splitChainToSequences(chain).reverse();
+            sequences.unshift('exampleContent');
+            for (var i = 0; i < sequences.length; i++) {
+                var sequence = sequences[i];
+                var siblings = [];
+                openTag = '<div';
+                attribute = 'class=';
+                closeTag = '</div>';
+                if (sequence === 'exampleContent') {
+                    openTag = '';
+                    attribute = '';
+                    closeTag = '';
+                    example = 'test';
+                } else {
+                    if (sequence.includes('+')) {
+                        siblings = sequence.split('+');
+                        for (var i = 0; i < siblings.length; i++) {
+                            sibling = siblings[i];
+                        }
+                    } else
+                    if (sequence.substring(0, 1) !== '.') {
+                        if (sequence.includes('.')) {
+                            example = transformTypeSelectorSequenceToHtmlNode(sequence, example);
+                        } else example = transformTypeSelectorToHtmlNode(sequence, example);
+                    } else example = transformClassSelectorToHtmlNode(sequence, example);
+                }
             }
-            return template;
-        };
-
-        function collectRules(){
+            return example;
+        }
+        function buildExample(mainSelector) {
+            var examples = [];
+            var mainChain = splitMainSelector(mainSelector); // List of selectors separated by ",".
+            for (var i = 0; i < mainChain.length; i++) {
+                examples.push(iterateChain(mainChain[i]));
+            }
+            return examples;
+        }
+        function collectRules() {
             var layer = {};
             var currentLayer = '';
             var currentCategory = '';
-            root.each(function (container) {
+            root.each(function(container) {
                 var ruleSet = {};
                 // Process comments
                 if (container.type === 'comment') {
@@ -178,10 +217,10 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                         currentCategory = '';
                     }
                     if (container.text.includes('startAutoExample')) {
-                        autoTemplate = true;
+                        autoExample = true;
                     }
                     if (container.text.includes('stopAutoExample')) {
-                        autoTemplate = false;
+                        autoExample = false;
                     }
                 }
                 if (documenting) {
@@ -189,41 +228,41 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
                     // Process rules
                     if (container.type === 'rule') {
                         selectorsCount = selectorsCount + 1;
-                        ruleSelector = container.selector;
+                        ruleSelector = container.selector.replace(/(\r\n|\n|\r)/gm, ' ');
                         recognizeBemType();
                         recognizeStatus();
                         recognizeState();
                         if (container.nodes[0]) {
                             findExample(container.nodes[0].text);
                         };
-                        // ruleSet.subSelectors = splitSubSelectors(ruleSelector);
-                        // ruleSet.chainsList = splitSelectorToNodes(ruleSelector);
+                        // ruleSet.mainChain = splitMainSelector(ruleSelector);
                         ruleSet.selector = ruleSelector;
-                        ruleSet.layer = currentLayer;
-                        ruleSet.category = currentCategory;
-                        ruleSet.blockName = blockName;
-                        exampleClass = ruleSelector.replace(/\./g,' ');
-                        exampleClass = exampleClass.replace(/\:before/g,'');
-                        exampleClass = exampleClass.replace(/\:after/g,'');
-                        ruleSet.BEM = bemType;
+                        ruleSet.nodes = splitChainToSequences(ruleSelector);
+                        // ruleSet.layer = currentLayer;
+                        // ruleSet.category = currentCategory;
+                        // ruleSet.blockName = blockName;
+                        exampleClass = ruleSelector.replace(/\./g, ' ');
+                        exampleClass = exampleClass.replace(/\:before/g, '');
+                        exampleClass = exampleClass.replace(/\:after/g, '');
+                        // ruleSet.BEM = bemType;
                         ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
                         ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : '';
                         // ruleSet.status = blockStatus;
                         // ruleSet.state = blockState;
-                        if (autoTemplate){
-                            ruleSet.template = buildExample(ruleSelector);
+
+                        if (autoExample) {
+                            ruleSet.examples = buildExample(ruleSelector);
                         }
-                        ruleSet.example = example;
-                        if (example === '') {
-                            ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
-                        }
+                        // ruleSet.example = example;
+                        // if (example === '') {
+                        //     ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
+                        // }
                         rules.push(ruleSet);
                     }
                 }
             });
             return rules;
         };
-
         findLayers();
         findCategories();
 
@@ -245,4 +284,9 @@ module.exports = postcss.plugin('postcss-list-selectors', function (opts) {
         materialsCount = 0;
         componentsCount = 0;
     };
-});
+
+
+};
+module.exports = postcss.plugin('postcss-list-selectors', mainFunction);
+
+mainFunction({});
