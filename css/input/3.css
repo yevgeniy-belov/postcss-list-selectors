@@ -2,8 +2,11 @@
 /*layer: test*/
 /*category: general*/
 /*startAutoExample*/
-.btn + .icon .btn--xl, .icon + .icon > i {}
+/*.btn + .icon .btn--xl, .icon + .icon > i {}*/
 /*ul.list.list--xl li, .list, .btn.btn--xl, button, .tabs .tabs__item{}*/
-/*ul.list li.list__item,*/
-/*.list .list__item{}*/
-/*.block .block__element p{}*/
+/*ul.list li.list__item, .list .list__item {}*/
+/*.block + .block__element p{}*/
+a .b + .c > d{}
+/*.a .b, .c + .d{}*/
+/*.a + .b{}*/
+/*li.li__a.li--xl a + .li__b button{}*/

@@ -42,6 +42,27 @@ var mainFunction = function(opts) {
                 }
             });
         }
+        function findExample(blockDom) {
+            if (blockDom) {
+                if (blockDom.includes('example:')) {
+                    example = blockDom.replace('example: ', '');
+                }
+            }
+        }
+        function findRepeatingExample(blockDom) {
+            if (blockDom) {
+                if (blockDom.includes('startExample:')) {
+                    example = blockDom.replace('startExample: ', '');
+                }
+            }
+        }
+
+        function defineBlockName() {
+            if (blockState !== '') {
+                blockName = ruleSelector.replace('^:', '');
+            }
+        }
+
         function recognizeState() {
             if (ruleSelector.includes('hover')) {
                 blockState = 'hover';
@@ -61,11 +82,6 @@ var mainFunction = function(opts) {
                 blockState = 'visited';
             } else {
                 blockState = '';
-            }
-        }
-        function defineBlockName() {
-            if (blockState !== '') {
-                blockName = ruleSelector.replace('^:', '');
             }
         }
         function recognizeStatus() {
@@ -103,27 +119,34 @@ var mainFunction = function(opts) {
                 bemType = 'block';
             }
         }
-        function findExample(blockDom) {
-            if (blockDom) {
-                if (blockDom.includes('example:')) {
-                    example = blockDom.replace('example: ', '');
-                }
-            }
-        }
-        function findRepeatingExample(blockDom) {
-            if (blockDom) {
-                if (blockDom.includes('startExample:')) {
-                    example = blockDom.replace('startExample: ', '');
-                }
-            }
-        }
-        function transformClassSelectorToHtmlNode(classSelector, childNode){
+
+        function addSiblingClassNode(classSelector, childNode){
             classSelector = classSelector.replace('.', '');
+            return '<div class=' + '"' + classSelector + '"' + '>' + '</div>' + childNode;
+        }
+        function addSiblingTypeNode(typeSelector, childNode){
+            return '<' + typeSelector + '>' + '</' + typeSelector + '>' + childNode;
+        }
+        function addSiblingTypeNodeWithClasses(simpleSequence, childNode){
+            simpleSequence = simpleSequence.split(/\./).reverse();
+            classSelector = simpleSequence.slice(0, simpleSequence.length - 1).reverse().join(' ');
+            return '<' + simpleSequence[simpleSequence.length - 1] + ' ' +'class=' + '"' + classSelector + '"' + '>' + '</' + simpleSequence[simpleSequence.length - 1] + '>' + childNode;
+        }
+
+        function wrapByClassNode(simpleSequence, childNode){
+            simpleSequence = simpleSequence.split(/\./).reverse();
+            classSelector = simpleSequence.reverse().join(' ');
             return '<div class=' + '"' + classSelector + '"' + '>' + childNode + '</div>';
         }
-        function transformTypeSelectorToHtmlNode(typeSelector, childNode){
+        function wrapByTypeNode(typeSelector, childNode){
             return '<' + typeSelector + '>' + childNode + '</' + typeSelector + '>';
         }
+        function wrapByTypeNodeWithClasses(simpleSequence, childNode){
+            simpleSequence = simpleSequence.split(/\./).reverse();
+            classSelector = simpleSequence.slice(0, simpleSequence.length - 1).reverse().join(' ');
+            return '<' + simpleSequence[simpleSequence.length - 1] + ' ' +'class=' + '"' + classSelector + '"' + '>' + childNode + '</' + simpleSequence[simpleSequence.length - 1] + '>';
+        }
+
         function transformTypeSelectorSequenceToHtmlNode(typeSelectorSequence, childNode){
             var sequenceChains = typeSelectorSequence.split('.');
             var typeSelector = sequenceChains[0];
@@ -132,21 +155,85 @@ var mainFunction = function(opts) {
             closeTag = '</' + typeSelector + '>';
             return openTag + ' ' + attribute + '"' + classesList + '"' + '>' + example + closeTag;
         }
+
+        function transformSelector(chain) {
+            html = '';
+            parts = splitChainToParts(chain).reverse();
+            var lastCombinator = '';
+            var combinator = false
+            var lastHtmlNode = '';
+            console.log('sequenses: ' + '"' + parts + '"');
+            for (var i = 0; i < parts.length; i++) {
+                var part = parts[i];
+                if (i === 0){
+                    html = generateExampleContent();
+                }
+
+                if (part === ' ' || part === '>' || part === '+' || part === '~'){
+                    lastCombinator = part;
+                    combinator = true;
+                    console.log('lastCombinator: ' + '"' + lastCombinator+ '"');
+                } else {
+                    if (lastCombinator === ' '||'>'){
+                        if (part.substr(0, 1) !== '.') {
+                            if (part.includes('.')){
+                                html = wrapByTypeNodeWithClasses(part, html);
+                            } else html = wrapByTypeNode(part, html);
+                        } else html = wrapByClassNode(part, html);
+                    }
+                    if (lastCombinator === ''){
+                        if (part.substr(0, 1) !== '.'){
+                            if (part.includes('.')){
+                                html = wrapByTypeNodeWithClasses(part, html);
+                            } else html = wrapByTypeNode(part, html);
+                        } else html = wrapByClassNode(part, html);
+                    }
+                    if (lastCombinator === '+'){
+                        if (part.substr(0, 1) !== '.') {
+                            if (part.includes('.')){
+                                html = addSiblingTypeNodeWithClasses(part, html);
+                            } else html = addSiblingTypeNode(part, html);
+                        } else html = addSiblingClassNode(part, html);
+                    }
+                }
+                // lastCombinator = '';
+            }
+            return html;
+        }
+
         function splitMainSelector(mainSelector) {
             var s = mainSelector
             s = s.split(', .').join(',.');
             s = s.split(', ').join(',');
             return s.split(',');
         }
+        function splitChainToParts(chain) {
+            var chain = chain;
+            parts = [];
+            parts = chain.split((/( )/)); // Split chain to sequnces (separated by spaces).
+            for (var i = 0; i < parts.length; i++) {
+                if (parts[i] === '+'){
+                    parts.splice(i-1, 1);
+                    parts.splice(i, 1);
+                }
+                if (parts[i] === '>'){
+                    parts.splice(i-1, 1);
+                    parts.splice(i, 1);
+                }
+            }
+            return parts;
+        }
         function splitChainToSequences(chain) {
             var chain = chain;
             chain = chain.replace(/ \+ /g, '+'); // Remove spaces for correct split.
             chain = chain.replace(/ > /g, '>'); // Remove spaces for correct split.
             chain = chain.replace(/ ~ /g, '~'); // Remove spaces for correct split.
-            console.log(chain);
             sequence = chain.split(/ |>|~|\+/); // Split chain to sequnces (separated by spaces).
-            // console.log(sequence);
             return sequence;
+        }
+
+        function generateExampleContent() {
+            return 'test'; // Temporary default string.
         }
         function iterateChain(chain) {
             var example = '';
@@ -154,28 +241,14 @@ var mainFunction = function(opts) {
             sequences.unshift('exampleContent');
             for (var i = 0; i < sequences.length; i++) {
                 var sequence = sequences[i];
-                var siblings = [];
-                openTag = '<div';
-                attribute = 'class=';
-                closeTag = '</div>';
                 if (sequence === 'exampleContent') {
-                    openTag = '';
-                    attribute = '';
-                    closeTag = '';
-                    example = 'test';
-                } else {
-                    if (sequence.includes('+')) {
-                        siblings = sequence.split('+');
-                        for (var i = 0; i < siblings.length; i++) {
-                            sibling = siblings[i];
-                        }
-                    } else
-                    if (sequence.substring(0, 1) !== '.') {
-                        if (sequence.includes('.')) {
-                            example = transformTypeSelectorSequenceToHtmlNode(sequence, example);
-                        } else example = transformTypeSelectorToHtmlNode(sequence, example);
-                    } else example = transformClassSelectorToHtmlNode(sequence, example);
-                }
+                    example = generateExampleContent();
+                } else if (sequence.substring(0, 1) !== '.') {
+                    if (sequence.includes('.')) {
+                        example = transformTypeSelectorSequenceToHtmlNode(sequence, example);
+                    } else example = wrapByTypeNode(sequence, example);
+                } else example = wrapByClassNode(sequence, example);
+
             }
             return example;
         }
@@ -183,7 +256,7 @@ var mainFunction = function(opts) {
             var examples = [];
             var mainChain = splitMainSelector(mainSelector); // List of selectors separated by ",".
             for (var i = 0; i < mainChain.length; i++) {
-                examples.push(iterateChain(mainChain[i]));
+                examples.push(transformSelector(mainChain[i]));
             }
             return examples;
         }
@@ -263,6 +336,7 @@ var mainFunction = function(opts) {
             });
             return rules;
         };
+
         findLayers();
         findCategories();
 

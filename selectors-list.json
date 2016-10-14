@@ -7,19 +7,16 @@
     ],
     "rules": [
         {
-            "selector": ".btn + .icon .btn--xl, .icon + .icon > i",
+            "selector": "a .b + .c > d",
             "nodes": [
-                ".btn",
-                ".icon",
-                ".btn--xl,",
-                ".icon",
-                ".icon",
-                "i"
+                "a",
+                ".b",
+                ".c",
+                "d"
             ],
             "modifierType": "",
             "examples": [
-                "<div class=\"btn\"><div class=\"icon\"><div class=\"btn--xl\">test</div></div></div>",
-                "<div class=\"icon\"><div class=\"icon\"><i>test</i></div></div>"
+                "<a><div class=\"b\"></div><div class=\" b\"><div class=\" c\"><d><d>test</d></d></div></div></a>"
             ]
         }
     ]

@@ -32,7 +32,10 @@
     "grunt-postcss": "^0.8.0"
   },
   "scripts": {
-    "test": "ava && eslint *.js"
+    "test": "ava && eslint *.js",
+    "nodemon": "nodemon C:/Users/belovy/AppData/Roaming/npm/node_modules/grunt-cli/bin/grunt postcss",
+    "debug": "node --debug-brk C:/Users/belovy/AppData/Roaming/npm/node_modules/grunt-cli/bin/grunt postcss",
+    "serve": "forever index.js"
   },
   "eslintConfig": {}
 }
