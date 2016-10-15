@@ -15,6 +15,7 @@ var mainFunction = function(opts) {
     categories = []; // Colors, typography, buttons, etc.
     tags = []; // List of used tags.
     return function(root) {
+        var indentationCount = 0;
         var selectorsCount = 0;
         var elementsCount = 0;
         var objectsCount = 0;
@@ -134,6 +135,8 @@ var mainFunction = function(opts) {
         }
 
         function wrapByClassNode(simpleSequence, childNode){
+            var indent = '\t'
+            indent = indent.repeat(indentationCount);
             simpleSequence = simpleSequence.split(/\./).reverse();
             classSelector = simpleSequence.reverse().join(' ');
             return '<div class=' + '"' + classSelector + '"' + '>' + childNode + '</div>';
@@ -157,24 +160,25 @@ var mainFunction = function(opts) {
         }
 
         function transformSelector(chain) {
-            html = '';
-            parts = splitChainToParts(chain).reverse();
+            var html = '';
+            var parts = splitChainToParts(chain).reverse();
             var lastCombinator = '';
             var combinator = false
             var lastHtmlNode = '';
-            console.log('sequenses: ' + '"' + parts + '"');
             for (var i = 0; i < parts.length; i++) {
                 var part = parts[i];
                 if (i === 0){
                     html = generateExampleContent();
                 }
+                if (part === ' ') {
+                    indentationCount = indentationCount + 1;
+                }
 
                 if (part === ' ' || part === '>' || part === '+' || part === '~'){
                     lastCombinator = part;
                     combinator = true;
-                    console.log('lastCombinator: ' + '"' + lastCombinator+ '"');
                 } else {
-                    if (lastCombinator === ' '||'>'){
+                    if (lastCombinator === ' '){
                         if (part.substr(0, 1) !== '.') {
                             if (part.includes('.')){
                                 html = wrapByTypeNodeWithClasses(part, html);
@@ -189,6 +193,7 @@ var mainFunction = function(opts) {
                         } else html = wrapByClassNode(part, html);
                     }
                     if (lastCombinator === '+'){
+                        indentationCount = 0;
                         if (part.substr(0, 1) !== '.') {
                             if (part.includes('.')){
                                 html = addSiblingTypeNodeWithClasses(part, html);
@@ -196,16 +201,18 @@ var mainFunction = function(opts) {
                         } else html = addSiblingClassNode(part, html);
                     }
                 }
-                // lastCombinator = '';
+                lastCombinator = '';
             }
             return html;
         }
 
         function splitMainSelector(mainSelector) {
-            var s = mainSelector
-            s = s.split(', .').join(',.');
-            s = s.split(', ').join(',');
-            return s.split(',');
+            var selector = mainSelector.replace(/, /g, ',').split(',');
+            return selector;
+        }
+        function splitSiblings(selector) {
+            var sibling = selector.replace(/ \+ /g, '+').split('+');
+            return sibling;
         }
         function splitChainToParts(chain) {
             var chain = chain;
@@ -256,7 +263,10 @@ var mainFunction = function(opts) {
             var examples = [];
             var mainChain = splitMainSelector(mainSelector); // List of selectors separated by ",".
             for (var i = 0; i < mainChain.length; i++) {
-                examples.push(transformSelector(mainChain[i]));
+                var chain = splitSiblings(mainChain[i]);
+                for (var i2 = 0; i2 < chain.length; i2++) {
+                    examples.push(transformSelector(chain[i2]));
+                }
             }
             return examples;
         }
@@ -318,8 +328,8 @@ var mainFunction = function(opts) {
                         exampleClass = exampleClass.replace(/\:before/g, '');
                         exampleClass = exampleClass.replace(/\:after/g, '');
                         // ruleSet.BEM = bemType;
-                        ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
-                        ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : '';
+                        // ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
+                        // ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : '';
                         // ruleSet.status = blockStatus;
                         // ruleSet.state = blockState;
 

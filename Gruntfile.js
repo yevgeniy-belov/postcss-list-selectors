@@ -11,8 +11,8 @@ module.exports = function(grunt) {
                 ]
             },
             dist: {
-                src: 'css/input/3.css',
-                // src: '../stylebox/docs/build/css/*.css',
+                // src: 'css/input/3.css',
+                src: '../stylebox/docs/build/css/style_hpe_0.9.102.css',
                 dest: 'build/output.css'
             }
 
@@ -32,9 +32,10 @@ module.exports = function(grunt) {
         },
         copy: {
             main: {
-                src: 'build/selectors-list.json',
-                dest: 'build/',
-                // dest: '../stylebox/docs/src/data/',
+                src: 'selectors-list.json',
+                // dest: 'build/',
+                dest: '../stylebox/docs/src/data/general/',
+                // dest: '../stylebox/docs/build/',
             }
 
         },
