@@ -1,6 +1,5 @@
 require('es6-promise').polyfill();
 var postcss = require('postcss');
-var fs = require('fs');
 var _ = require('lodash');
 var mainFunction = function(opts) {
     var mainDest = opts.mainDest || 'selectors-list.json';
@@ -354,7 +353,8 @@ var mainFunction = function(opts) {
         wrapper.categories = categories.sort();
         wrapper.rules = collectRules();
 
-        fs.writeFile(mainDest, JSON.stringify(wrapper, null, 4));
+        var fs = require('fs');
+        fs.writeFileSync(mainDest, JSON.stringify(wrapper, null, 4));
         // fs.writeFile(statsDest, JSON.stringify(stats, null, 4));
         documenting = false;
         wrapper = {}; //This is what will be exported to JSON

@@ -11,8 +11,8 @@ module.exports = function(grunt) {
                 ]
             },
             dist: {
-                // src: 'css/input/3.css',
-                src: '../stylebox/docs/build/css/style_hpe_0.9.102.css',
+                src: 'css/input/3.css',
+                // src: '../stylebox/docs/build/css/style_hpe_0.9.102.css',
                 dest: 'build/output.css'
             }
 
