@@ -22,6 +22,7 @@ var mainFunction = function(opts) {
         var materialsCount = 0;
         var componentsCount = 0;
         var ruleSelector = '';
+        var modifiedSelector = '';
         var blockName = '';
         var bemType = '';
         var blockStatus = '';
@@ -111,16 +112,39 @@ var mainFunction = function(opts) {
             }
             return false;
         }
-        function recognizeBemType() {
-            if (ruleSelector.includes('--')) {
+        function recognizeBemType(selector) {
+            s = selector;
+            if (s.includes('--')) {
                 bemType = 'modifier';
-            } else if (ruleSelector.includes('__')) {
+            } else if (s.includes('__')) {
                 bemType = 'element';
             } else {
                 bemType = 'block';
             }
         }
 
+        function modifySelector(selector){
+            var parts = splitChainToParts(selector);
+            var newParts = [];
+            for (var i = 0; i < parts.length; i++) {
+                var part = parts[i];
+                if (part.includes('__')){
+                    part = part.split('__')[0] + ' ' + part;
+                }
+                newParts.push(part);
+            }
+            return newParts.join('');
+        }
+        function extractBlock(part){
+            var block = part.split('__')[0];
+            return block;
+        }
+
+        function wrapElementByBlock(part){
+            var block = '';
+            block = part.split('__')[0];
+            return '<div class=' + '"' + block + '"' + '>' + part + '</div>';
+        }
         function addSiblingClassNode(classSelector, childNode){
             classSelector = classSelector.replace('.', '');
             return '<div class=' + '"' + classSelector + '"' + '>' + '</div>' + childNode;
@@ -178,6 +202,11 @@ var mainFunction = function(opts) {
                     lastCombinator = part;
                     combinator = true;
                 } else {
+                    if (bemType === 'modifier'){
+                        // modifiedSelector = attachModified(part);
+
+                    }
+
                     if (lastCombinator === ' '){
                         if (part.substr(0, 1) !== '.') {
                             if (part.includes('.')){
@@ -240,7 +269,7 @@ var mainFunction = function(opts) {
         }
 
         function generateExampleContent() {
-            return 'test'; // Temporary default string.
+            return 'TEXT'; // Temporary default string.
         }
         function iterateChain(chain) {
             var example = '';
@@ -312,7 +341,7 @@ var mainFunction = function(opts) {
                     if (container.type === 'rule') {
                         selectorsCount = selectorsCount + 1;
                         ruleSelector = container.selector.replace(/(\r\n|\n|\r)/gm, ' ');
-                        recognizeBemType();
+                        recognizeBemType(ruleSelector);
                         recognizeStatus();
                         recognizeState();
                         if (container.nodes[0]) {
@@ -320,26 +349,26 @@ var mainFunction = function(opts) {
                         };
                         // ruleSet.mainChain = splitMainSelector(ruleSelector);
                         ruleSet.selector = ruleSelector;
+                        ruleSet.modifiedSelector = modifySelector(ruleSelector);
                         ruleSet.nodes = splitChainToSequences(ruleSelector);
-                        // ruleSet.layer = currentLayer;
-                        // ruleSet.category = currentCategory;
-                        // ruleSet.blockName = blockName;
+                        ruleSet.layer = currentLayer;
+                        ruleSet.category = currentCategory;
                         exampleClass = ruleSelector.replace(/\./g, ' ');
                         exampleClass = exampleClass.replace(/\:before/g, '');
                         exampleClass = exampleClass.replace(/\:after/g, '');
-                        // ruleSet.BEM = bemType;
+                        ruleSet.BEM = bemType;
                         // ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
-                        // ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : '';
-                        // ruleSet.status = blockStatus;
-                        // ruleSet.state = blockState;
+                        // ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : ''; // TODO: fix
+                        ruleSet.status = blockStatus;
+                        ruleSet.state = blockState;
 
                         if (autoExample) {
-                            ruleSet.examples = buildExample(ruleSelector);
+                            ruleSet.examples = buildExample(modifySelector(ruleSelector));
                         }
-                        // ruleSet.example = example;
-                        // if (example === '') {
-                        //     ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
-                        // }
+                        ruleSet.example = example;
+                        if (example === '') {
+                            ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
+                        }
                         rules.push(ruleSet);
                     }
                 }
@@ -354,7 +383,7 @@ var mainFunction = function(opts) {
         wrapper.categories = categories.sort();
         wrapper.rules = collectRules();
 
-        fs.writeFile(mainDest, JSON.stringify(wrapper, null, 4));
+        fs.writeFileSync(mainDest, JSON.stringify(wrapper, null, 4));
         // fs.writeFile(statsDest, JSON.stringify(stats, null, 4));
         documenting = false;
         wrapper = {}; //This is what will be exported to JSON
