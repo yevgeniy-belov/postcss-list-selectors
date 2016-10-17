@@ -7,19 +7,13 @@
     ],
     "rules": [
         {
-            "selector": ".tabs__item a",
-            "modifiedSelector": ".tabs .tabs__item a",
-            "nodes": [
-                ".tabs__item",
-                "a"
-            ],
+            "selector": ".btn:hover:before:after",
+            "modifiedSelector": ".btn",
             "layer": "test",
             "category": "general",
-            "BEM": "element",
-            "status": "",
-            "state": "",
+            "BEM": "block",
             "examples": [
-                "<div class=\" tabs\"><div class=\" tabs__item\"><a>TEXT</a></div></div>"
+                "<div class=\" btn\">TEXT</div>"
             ],
             "example": "missing"
         }

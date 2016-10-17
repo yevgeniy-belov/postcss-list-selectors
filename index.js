@@ -128,8 +128,14 @@ var mainFunction = function(opts) {
             var newParts = [];
             for (var i = 0; i < parts.length; i++) {
                 var part = parts[i];
+                if (part.includes('--')){
+                    part = part.split('--')[0] + part;
+                }
                 if (part.includes('__')){
                     part = part.split('__')[0] + ' ' + part;
+                }
+                if (part.includes(':hover')){
+                    part = part.replace(/:hover|:active|:visited|:before|:after/g,'');
                 }
                 newParts.push(part);
             }
@@ -202,11 +208,6 @@ var mainFunction = function(opts) {
                     lastCombinator = part;
                     combinator = true;
                 } else {
-                    if (bemType === 'modifier'){
-                        // modifiedSelector = attachModified(part);
-
-                    }
-
                     if (lastCombinator === ' '){
                         if (part.substr(0, 1) !== '.') {
                             if (part.includes('.')){
@@ -350,7 +351,7 @@ var mainFunction = function(opts) {
                         // ruleSet.mainChain = splitMainSelector(ruleSelector);
                         ruleSet.selector = ruleSelector;
                         ruleSet.modifiedSelector = modifySelector(ruleSelector);
-                        ruleSet.nodes = splitChainToSequences(ruleSelector);
+                        // ruleSet.nodes = splitChainToSequences(ruleSelector);
                         ruleSet.layer = currentLayer;
                         ruleSet.category = currentCategory;
                         exampleClass = ruleSelector.replace(/\./g, ' ');
@@ -359,8 +360,8 @@ var mainFunction = function(opts) {
                         ruleSet.BEM = bemType;
                         // ruleSet.modifierType = recognizeModifierType(ruleSelector, ['xl', 'lg']) ? 'size' : '';
                         // ruleSet.modifierType = recognizeModifierType(ruleSelector, ['weak', 'strong']) ? 'intensity' : ''; // TODO: fix
-                        ruleSet.status = blockStatus;
-                        ruleSet.state = blockState;
+                        // ruleSet.status = blockStatus;
+                        // ruleSet.state = blockState;
 
                         if (autoExample) {
                             ruleSet.examples = buildExample(modifySelector(ruleSelector));

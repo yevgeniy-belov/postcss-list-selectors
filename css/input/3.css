@@ -2,7 +2,8 @@
 /*layer: test*/
 /*category: general*/
 /*startAutoExample*/
-.tabs__item a{}
+/*.tabs__item{}*/
+/*.alert__message{}*/
 /*.btn + .icon .btn--xl, .icon + .icon > i {}*/
 /*ul.list.list--xl li, .list, .btn.btn--xl, button, .tabs .tabs__item{}*/
 /*ul.list li.list__item, .list .list__item {}*/
@@ -15,3 +16,5 @@
 /*li.li__a.li--xl a + .li__b button{}*/
 /*button a{}*/
 /*.btn--xl{}*/
+/*.tabs__item--silent{}*/
+.btn:hover:before:after{}
