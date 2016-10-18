@@ -7,15 +7,12 @@
     ],
     "rules": [
         {
-            "selector": ".btn:hover:before:after",
-            "modifiedSelector": ".btn",
+            "selector": ".li__a.li--xl a + .li__b button",
+            "modifiedSelector": ".li .li__a.li.li__a.li--xl a+.li .li__b button",
             "layer": "test",
             "category": "general",
-            "BEM": "block",
-            "examples": [
-                "<div class=\" btn\">TEXT</div>"
-            ],
-            "example": "missing"
+            "BEM": "modifier",
+            "examples": "<div class=\" li\">\n    <div class=\" li__a li li__a li--xl\"><a>Text</a></div>\n</div>,\n<div class=\" li\">\n    <div class=\" li__b\"><button>Text</button></div>\n</div>"
         }
     ]
 }

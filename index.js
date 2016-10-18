@@ -1,5 +1,6 @@
 require('es6-promise').polyfill();
 var postcss = require('postcss');
+var beautify_html = require('js-beautify').html;
 var fs = require('fs');
 var _ = require('lodash');
 var mainFunction = function(opts) {
@@ -7,7 +8,7 @@ var mainFunction = function(opts) {
     var statsDest = opts.statsDest || 'stats.json';
     var stats = {};
     var layerName = '';
-    var repeatingExample = 'missing';
+    var repeatingExample = '';
     var documenting = false;
     wrapper = {}; //This is what will be exported to JSON
     rules = []; //List of rules
@@ -15,7 +16,6 @@ var mainFunction = function(opts) {
     categories = []; // Colors, typography, buttons, etc.
     tags = []; // List of used tags.
     return function(root) {
-        var indentationCount = 0;
         var selectorsCount = 0;
         var elementsCount = 0;
         var objectsCount = 0;
@@ -59,10 +59,8 @@ var mainFunction = function(opts) {
             }
         }
 
-        function defineBlockName() {
-            if (blockState !== '') {
-                blockName = ruleSelector.replace('^:', '');
-            }
+        function calculateNestingDepth(chain){
+            return chain.split(' ').length;
         }
 
         function recognizeState() {
@@ -134,23 +132,20 @@ var mainFunction = function(opts) {
                 if (part.includes('__')){
                     part = part.split('__')[0] + ' ' + part;
                 }
-                if (part.includes(':hover')){
-                    part = part.replace(/:hover|:active|:visited|:before|:after/g,'');
-                }
+                part = part.replace(/:hover|:active|:visited|:before|:after/g,'');
                 newParts.push(part);
             }
             return newParts.join('');
         }
-        function extractBlock(part){
-            var block = part.split('__')[0];
-            return block;
+
+        function generateExampleContent(selector) {
+            var content = 'Text';
+            if (selector.includes('.icon-')){
+                content = '';
+            }
+            return content; // Temporary default string.
         }
 
-        function wrapElementByBlock(part){
-            var block = '';
-            block = part.split('__')[0];
-            return '<div class=' + '"' + block + '"' + '>' + part + '</div>';
-        }
         function addSiblingClassNode(classSelector, childNode){
             classSelector = classSelector.replace('.', '');
             return '<div class=' + '"' + classSelector + '"' + '>' + '</div>' + childNode;
@@ -165,8 +160,6 @@ var mainFunction = function(opts) {
         }
 
         function wrapByClassNode(simpleSequence, childNode){
-            var indent = '\t'
-            indent = indent.repeat(indentationCount);
             simpleSequence = simpleSequence.split(/\./).reverse();
             classSelector = simpleSequence.reverse().join(' ');
             return '<div class=' + '"' + classSelector + '"' + '>' + childNode + '</div>';
@@ -198,30 +191,27 @@ var mainFunction = function(opts) {
             for (var i = 0; i < parts.length; i++) {
                 var part = parts[i];
                 if (i === 0){
-                    html = generateExampleContent();
-                }
-                if (part === ' ') {
-                    indentationCount = indentationCount + 1;
+                    html = generateExampleContent(chain);
                 }
 
                 if (part === ' ' || part === '>' || part === '+' || part === '~'){
                     lastCombinator = part;
                     combinator = true;
                 } else {
-                    if (lastCombinator === ' '){
+                    if (lastCombinator === ' ' || lastCombinator === ''){
                         if (part.substr(0, 1) !== '.') {
                             if (part.includes('.')){
                                 html = wrapByTypeNodeWithClasses(part, html);
                             } else html = wrapByTypeNode(part, html);
                         } else html = wrapByClassNode(part, html);
                     }
-                    if (lastCombinator === ''){
-                        if (part.substr(0, 1) !== '.'){
-                            if (part.includes('.')){
-                                html = wrapByTypeNodeWithClasses(part, html);
-                            } else html = wrapByTypeNode(part, html);
-                        } else html = wrapByClassNode(part, html);
-                    }
+                    // if (lastCombinator === ''){
+                    //     if (part.substr(0, 1) !== '.'){
+                    //         if (part.includes('.')){
+                    //             html = wrapByTypeNodeWithClasses(part, html);
+                    //         } else html = wrapByTypeNode(part, html);
+                    //     } else html = wrapByClassNode(part, html);
+                    // }
                     if (lastCombinator === '+'){
                         indentationCount = 0;
                         if (part.substr(0, 1) !== '.') {
@@ -269,9 +259,6 @@ var mainFunction = function(opts) {
             return sequence;
         }
 
-        function generateExampleContent() {
-            return 'TEXT'; // Temporary default string.
-        }
         function iterateChain(chain) {
             var example = '';
             var sequences = splitChainToSequences(chain).reverse();
@@ -364,11 +351,12 @@ var mainFunction = function(opts) {
                         // ruleSet.state = blockState;
 
                         if (autoExample) {
-                            ruleSet.examples = buildExample(modifySelector(ruleSelector));
+                            ruleSet.examples = beautify_html(buildExample(modifySelector(ruleSelector)).join());
                         }
-                        ruleSet.example = example;
-                        if (example === '') {
-                            ruleSet.example = repeatingExample.replace(/\exampleClass/g, exampleClass) || 'missing';
+                        if (repeatingExample.length > 0) {
+                            var examples = [];
+                            examples.push(repeatingExample.replace(/\exampleClass/g, exampleClass))
+                            ruleSet.examples = beautify_html(examples.join());
                         }
                         rules.push(ruleSet);
                     }

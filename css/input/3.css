@@ -13,8 +13,20 @@
 /*.a .b, .c + .d{}*/
 /*i, a button{}*/
 /*.a + .b + .c .d, ul li{}*/
-/*li.li__a.li--xl a + .li__b button{}*/
+.li__a.li--xl a + .li__b button{}
 /*button a{}*/
 /*.btn--xl{}*/
+/*.a .b .c{}*/
+    /* startExample: <div class="icon-test exampleClass"></div>*/
+    /*.icon-color--strong{}*/
+    /*.icon-size--48{}*/
 /*.tabs__item--silent{}*/
-.btn:hover:before:after{}
+/*.btn:hover:before:after{}*/
+
+/*<thead>
+    <tr>
+        <th>Block</th>
+        <th>Markup</th>
+        <th>Example</th>
+    </tr>
+</thead>*/
