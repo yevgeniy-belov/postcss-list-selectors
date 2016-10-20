@@ -2,31 +2,8 @@
 /*layer: test*/
 /*category: general*/
 /*startAutoExample*/
-/*.tabs__item{}*/
-/*.alert__message{}*/
-/*.btn + .icon .btn--xl, .icon + .icon > i {}*/
-/*ul.list.list--xl li, .list, .btn.btn--xl, button, .tabs .tabs__item{}*/
-/*ul.list li.list__item, .list .list__item {}*/
-/*.a1.a2 + .b1.b2 a{}*/
-/*.a1 + .b1 a{}*/
-/*h1,h2{}*/
-/*.a .b, .c + .d{}*/
-/*i, a button{}*/
-/*.a + .b + .c .d, ul li{}*/
-.li__a.li--xl a + .li__b button{}
-/*button a{}*/
-/*.btn--xl{}*/
-/*.a .b .c{}*/
-    /* startExample: <div class="icon-test exampleClass"></div>*/
-    /*.icon-color--strong{}*/
-    /*.icon-size--48{}*/
-/*.tabs__item--silent{}*/
-/*.btn:hover:before:after{}*/
 
-/*<thead>
-    <tr>
-        <th>Block</th>
-        <th>Markup</th>
-        <th>Example</th>
-    </tr>
-</thead>*/
+.li__a.li--xl a + .li__b button{
+    color: blue;
+    margin: 10px;
+}

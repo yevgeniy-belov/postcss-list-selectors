@@ -1,6 +1,7 @@
 require('es6-promise').polyfill();
 var postcss = require('postcss');
 var beautify_html = require('js-beautify').html;
+var beautify_css = require('js-beautify').css;
 var fs = require('fs');
 var _ = require('lodash');
 var mainFunction = function(opts) {
@@ -28,6 +29,22 @@ var mainFunction = function(opts) {
         var blockStatus = '';
         var blockState = '';
         var autoExample = false;
+        var rule = '';
+        var declaration;
+
+        function getDeclaration(container) {
+            if(container.type === 'rule') {
+                var nodes = container.nodes;
+                var declarations = '';
+                for (var i = 0; i < nodes.length; i++) {
+                    var node = nodes[i];
+                    var property = node.prop;
+                    var value = node.value;
+                    declarations = declarations + property + ': ' + value + ';';
+                }
+                return beautify_css('{' + declarations + '}');
+            }
+        }
         function findLayers() {
             root.each(function(container) {
                 if (container.type === 'comment') {
@@ -337,6 +354,7 @@ var mainFunction = function(opts) {
                         };
                         // ruleSet.mainChain = splitMainSelector(ruleSelector);
                         ruleSet.selector = ruleSelector;
+                        ruleSet.declaration = getDeclaration(container);
                         ruleSet.modifiedSelector = modifySelector(ruleSelector);
                         // ruleSet.nodes = splitChainToSequences(ruleSelector);
                         ruleSet.layer = currentLayer;

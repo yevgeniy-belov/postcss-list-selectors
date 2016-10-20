@@ -8,6 +8,7 @@
     "rules": [
         {
             "selector": ".li__a.li--xl a + .li__b button",
+            "declaration": "{\n    color: blue;\n    margin: 10px;\n}",
             "modifiedSelector": ".li .li__a.li.li__a.li--xl a+.li .li__b button",
             "layer": "test",
             "category": "general",
